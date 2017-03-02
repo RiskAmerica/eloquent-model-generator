@@ -47,6 +47,16 @@ class EloquentModel extends ClassModel
             $this->addProperty($property);
         }
     }
+    
+    private function getObjectNameAndNameSpace($originalTableName) {
+        $explode = explode("_",$originalTableName);
+        $tableName = last($explode);
+        $namespace = '\App\Models';
+        for($i = 0; $i < count($explode)-1; $i++) {
+            $namespace.= '\\'.$explode[$i];
+        }
+        return [$tableName, $namespace];
+    }
 
     /**
      * @param Relation $relation
@@ -55,31 +65,27 @@ class EloquentModel extends ClassModel
      */
     public function addRelation(Relation $relation)
     {
-        $explode = explode("_",$relation->getTableName());
-        $tableName = last($explode);
-        $namespace = 'App\Models';
-        for($i = 0; $i < count($explode)-1; $i++) {
-            $namespace.= '\\'.$explode[$i];
-        }
+
+        list($className, $namespace) = $this->getObjectNameAndNameSpace($relation->getTableName());
         
-        $relationClass = $namespace.'\\'.Str::studly($tableName);
+        $relationClass = $namespace.'\\'.Str::studly($className);
         if ($relation instanceof HasOne) {
-            $name     = Str::camel($tableName);
+            $name     = Str::camel($className);
             $docBlock = sprintf('@return \%s', EloquentHasOne::class);
 
             $virtualPropertyType = $relationClass;
         } elseif ($relation instanceof HasMany) {
-            $name     = Str::plural(Str::camel($tableName));
+            $name     = Str::plural(Str::camel($className));
             $docBlock = sprintf('@return \%s', EloquentHasMany::class);
 
             $virtualPropertyType = sprintf('%s[]', $relationClass);
         } elseif ($relation instanceof BelongsTo) {
-            $name     = Str::camel($tableName);
+            $name     = Str::camel($className);
             $docBlock = sprintf('@return \%s', EloquentBelongsTo::class);
 
             $virtualPropertyType = $relationClass;
         } elseif ($relation instanceof BelongsToMany) {
-            $name     = Str::plural(Str::camel($tableName));
+            $name     = Str::plural(Str::camel($className));
             $docBlock = sprintf('@return \%s', EloquentBelongsToMany::class);
 
             $virtualPropertyType = sprintf('%s[]', $relationClass);
@@ -114,8 +120,8 @@ class EloquentModel extends ClassModel
     {
         $reflectionObject = new \ReflectionObject($relation);
         $name             = Str::camel($reflectionObject->getShortName());
-
-        $arguments = [Str::studly($relation->getTableName())];
+        list($className, $namespace) = $this->getObjectNameAndNameSpace($relation->getTableName());
+        $arguments = [$namespace.'\\'.Str::studly($className)];
         if ($relation instanceof BelongsToMany) {
             $defaultJoinTableName = TitleHelper::getDefaultJoinTableName($this->tableName, $relation->getTableName());
             $joinTableName        = $relation->getJoinTable() === $defaultJoinTableName
