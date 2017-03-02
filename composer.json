@@ -1,5 +1,5 @@
 {
-  "name": "asamaru7/eloquent-model-generator-for-lumen",
+  "name": "riam/eloquent-model-generator-for-lumen",
   "description": "Eloquent Model Generator",
   "license": "MIT",
   "autoload": {

@@ -18,6 +18,8 @@ use Krlove\EloquentModelGenerator\Model\HasOne;
 
 class EloquentModelBuilder
 {
+    const DATE_CLASS = '\RIAM\Date\Date';
+    
     /**
      * @var AbstractSchemaManager
      */
@@ -127,7 +129,7 @@ class EloquentModelBuilder
         $dates = [];
         foreach ($tableDetails->getColumns() as $column) {
             $type = $this->resolveType($column->getType()->getName());
-            if (strcmp($type, '\Carbon\Carbon') == 0) {
+            if (strcmp($type, self::DATE_CLASS) == 0) {
                 $dates[] = $column->getName();
             }
             $model->addProperty(new VirtualPropertyModel(
@@ -301,7 +303,7 @@ class EloquentModelBuilder
     protected function resolveType($type)
     {
         static $typesMap = [
-            'date'                        => '\Carbon\Carbon',
+            'date'                        => self::DATE_CLASS,
             'character varying'           => 'string',
             'boolean'                     => 'boolean',
             'name'                        => 'string',
@@ -314,7 +316,7 @@ class EloquentModelBuilder
             'bigint'                      => 'int',
             'string'                      => 'string',
             'decimal'                     => 'float',
-            'datetime'                    => '\Carbon\Carbon',
+            'datetime'                    => self::DATE_CLASS,
             'array'                       => 'mixed',   // todo test
         ];
 

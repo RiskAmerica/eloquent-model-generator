@@ -55,24 +55,31 @@ class EloquentModel extends ClassModel
      */
     public function addRelation(Relation $relation)
     {
-        $relationClass = Str::studly($relation->getTableName());
+        $explode = explode("_",$relation->getTableName());
+        $tableName = last($explode);
+        $namespace = 'App\Models';
+        for($i = 0; $i < count($explode)-1; $i++) {
+            $namespace.= '\\'.$explode[$i];
+        }
+        
+        $relationClass = $namespace.'\\'.Str::studly($tableName);
         if ($relation instanceof HasOne) {
-            $name     = Str::camel($relation->getTableName());
+            $name     = Str::camel($tableName);
             $docBlock = sprintf('@return \%s', EloquentHasOne::class);
 
             $virtualPropertyType = $relationClass;
         } elseif ($relation instanceof HasMany) {
-            $name     = Str::plural(Str::camel($relation->getTableName()));
+            $name     = Str::plural(Str::camel($tableName));
             $docBlock = sprintf('@return \%s', EloquentHasMany::class);
 
             $virtualPropertyType = sprintf('%s[]', $relationClass);
         } elseif ($relation instanceof BelongsTo) {
-            $name     = Str::camel($relation->getTableName());
+            $name     = Str::camel($tableName);
             $docBlock = sprintf('@return \%s', EloquentBelongsTo::class);
 
             $virtualPropertyType = $relationClass;
         } elseif ($relation instanceof BelongsToMany) {
-            $name     = Str::plural(Str::camel($relation->getTableName()));
+            $name     = Str::plural(Str::camel($tableName));
             $docBlock = sprintf('@return \%s', EloquentBelongsToMany::class);
 
             $virtualPropertyType = sprintf('%s[]', $relationClass);
