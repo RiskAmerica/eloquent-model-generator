@@ -182,7 +182,10 @@ class EloquentModel extends ClassModel
                     continue;
                 }
             }
-            $item = sprintf("'%s'", $item);
+            if(class_exists($item))
+                $item = $item.'::class';
+            else
+                $item = sprintf("'%s'", $item);
         }
 
         return implode(', ', array_reverse($array));
