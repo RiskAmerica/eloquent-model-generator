@@ -25,6 +25,8 @@ class EloquentModelBuilder
      */
     protected $manager;
 
+    protected $output;
+
     /**
      * Builder constructor.
      * @param DatabaseManager $databaseManager
@@ -40,6 +42,12 @@ class EloquentModelBuilder
         $dp = $this->manager->getDatabasePlatform();
         $dp->registerDoctrineTypeMapping('enum', 'array');
         $dp->registerDoctrineTypeMapping('set', 'array');
+
+        $this->output = new Symfony\Component\Console\Output\ConsoleOutput();
+    }
+
+    public function warn($text){
+        $this->output->writeln("<info>{$text}</info>");        
     }
 
     /**
@@ -121,7 +129,10 @@ class EloquentModelBuilder
     protected function setFields(EloquentModel $model)
     {
         $tableDetails       = $this->manager->listTableDetails($model->getTableName());
-        $primaryColumnNames = $tableDetails->getPrimaryKey()->getColumns();
+        $primaryColumnNames = $tableDetails->getPrimaryKey() ? $tableDetails->getPrimaryKey()->getColumns() : [];
+
+        if(empty($primaryColumnNames))
+            $this->warn("The table '{$tableDetails->getName()}' doesn't have primary key");
 
         $hasTimestamps = false;
         $isAutoincrement = true;
