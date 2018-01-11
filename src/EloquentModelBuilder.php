@@ -43,7 +43,7 @@ class EloquentModelBuilder
         $dp->registerDoctrineTypeMapping('enum', 'array');
         $dp->registerDoctrineTypeMapping('set', 'array');
 
-        $this->output = new Symfony\Component\Console\Output\ConsoleOutput();
+        $this->output = new \Symfony\Component\Console\Output\ConsoleOutput();
     }
 
     public function warn($text){
