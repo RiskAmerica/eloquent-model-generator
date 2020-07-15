@@ -18,7 +18,7 @@ use Krlove\EloquentModelGenerator\Model\HasOne;
 
 class EloquentModelBuilder
 {
-    const DATE_CLASS = '\RIAM\Date\Date';
+    const DATE_CLASS = '\App\Utils\Date';
     
     /**
      * @var AbstractSchemaManager

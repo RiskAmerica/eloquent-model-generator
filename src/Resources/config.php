@@ -13,7 +13,7 @@ if (! function_exists('app_path')) {
 }
 
 return [
-    'namespace'       => 'App\Models',
+	'namespace'       => 'App\Models',
     'base_class_name' => \Illuminate\Database\Eloquent\Model::class,
     'output_path'     => app_path() . '/Models',
     'no_timestamps'   => null,
